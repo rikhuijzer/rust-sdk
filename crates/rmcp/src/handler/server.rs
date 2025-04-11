@@ -2,11 +2,44 @@ use crate::{
     error::Error as McpError,
     model::*,
     service::{Peer, RequestContext, RoleServer, Service, ServiceRole},
+    handler::server::tool::{ToolBox, ToolBoxItem, ToolCallContext},
 };
-
+use std::sync::RwLock;
+use std::future::Future;
+use futures::future::BoxFuture;
+use std::clone::Clone;
+use std::fmt::Debug;
+use std::marker::Send;
+use std::marker::Sync;
 mod resource;
 pub mod tool;
 pub mod wrapper;
+
+#[derive(Debug)]
+pub struct Server<A> {
+    tool_box: std::sync::Arc<RwLock<ToolBox<A>>>,
+}
+
+impl<S: Clone + Debug + Send + Sync + 'static> Server<S> {
+    pub fn new() -> Self {
+        let tool_box = std::sync::Arc::new(RwLock::new(ToolBox::new()));
+        Self { tool_box }
+    }
+    pub fn tool<C>(&self, name: &str, description: &str, call: C)
+    where
+        C: Fn(ToolCallContext<'_, S>) -> BoxFuture<'_, Result<CallToolResult, crate::Error>>
+            + Send
+            + Sync
+            + 'static,
+    {
+        let schema = "";
+        let schema = serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(schema).unwrap_or_default();
+        let attr = Tool::new(name.to_string(), description.to_string(), schema);
+        let item = ToolBoxItem::new(attr, call);
+        self.tool_box.try_write().unwrap().add(item);
+    }
+}
+
 impl<H: ServerHandler> Service<RoleServer> for H {
     async fn handle_request(
         &self,

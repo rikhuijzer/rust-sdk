@@ -9,9 +9,9 @@ use rmcp::{
 use tokio::sync::Notify;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-pub struct Server {}
+pub struct App {}
 
-impl ServerHandler for Server {
+impl ServerHandler for App {
     fn get_info(&self) -> ServerInfo {
         ServerInfo {
             capabilities: ServerCapabilities::builder()
@@ -79,7 +79,7 @@ async fn test_server_notification() -> anyhow::Result<()> {
         .try_init();
     let (server_transport, client_transport) = tokio::io::duplex(4096);
     tokio::spawn(async move {
-        let server = Server {}.serve(server_transport).await?;
+        let server = App {}.serve(server_transport).await?;
         server.waiting().await?;
         anyhow::Ok(())
     });

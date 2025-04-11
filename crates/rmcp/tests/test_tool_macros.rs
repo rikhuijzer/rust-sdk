@@ -10,7 +10,7 @@ pub struct GetWeatherRequest {
     pub date: String,
 }
 
-impl ServerHandler for Server {
+impl ServerHandler for App {
     async fn call_tool(
         &self,
         request: rmcp::model::CallToolRequestParam,
@@ -25,9 +25,9 @@ impl ServerHandler for Server {
 }
 
 #[derive(Debug, Clone, Default)]
-pub struct Server {}
+pub struct App {}
 
-impl Server {
+impl App {
     /// This tool is used to get the weather of a city.
     #[tool(name = "get-weather", description = "Get the weather of a city.", vis = )]
     pub async fn get_weather(&self, #[tool(param)] city: String) -> String {
@@ -74,16 +74,16 @@ impl<DS: DataService> GenericServer<DS> {
 
 #[tokio::test]
 async fn test_tool_macros() {
-    let server = Server::default();
-    let _attr = Server::get_weather_tool_attr();
-    let _get_weather_call_fn = Server::get_weather_tool_call;
-    let _get_weather_fn = Server::get_weather;
+    let server = App::default();
+    let _attr = App::get_weather_tool_attr();
+    let _get_weather_call_fn = App::get_weather_tool_call;
+    let _get_weather_fn = App::get_weather;
     server.get_weather("harbin".into()).await;
 }
 
 #[tokio::test]
 async fn test_tool_macros_with_empty_param() {
-    let _attr = Server::empty_param_tool_attr();
+    let _attr = App::empty_param_tool_attr();
     println!("{_attr:?}");
     assert_eq!(_attr.input_schema.get("type").unwrap(), "object");
     assert!(_attr.input_schema.get("properties").is_none());

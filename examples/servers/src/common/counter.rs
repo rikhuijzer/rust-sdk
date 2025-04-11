@@ -13,7 +13,7 @@ pub struct StructRequest {
     pub b: i32,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Counter {
     counter: Arc<Mutex<i32>>,
 }
@@ -31,7 +31,7 @@ impl Counter {
     }
 
     #[tool(description = "Increment the counter by 1")]
-    async fn increment(&self) -> Result<CallToolResult, McpError> {
+    pub async fn increment(&self) -> Result<CallToolResult, McpError> {
         let mut counter = self.counter.lock().await;
         *counter += 1;
         Ok(CallToolResult::success(vec![Content::text(

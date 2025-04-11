@@ -98,6 +98,8 @@ pub mod service;
 pub use handler::client::ClientHandler;
 #[cfg(feature = "server")]
 pub use handler::server::ServerHandler;
+#[cfg(feature = "server")]
+pub use handler::server::Server;
 #[cfg(any(feature = "client", feature = "server"))]
 pub use service::{Peer, Service, ServiceError, ServiceExt};
 #[cfg(feature = "client")]

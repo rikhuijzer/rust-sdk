@@ -392,6 +392,16 @@ pub struct ToolBox<S> {
     pub map: std::collections::HashMap<Cow<'static, str>, ToolBoxItem<S>>,
 }
 
+impl<S> std::fmt::Debug for ToolBox<S> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut map = std::collections::HashMap::new();
+        for (key, value) in &self.map {
+            map.insert(key.clone(), value.attr.name.clone());
+        }
+        f.debug_struct("ToolBox").field("map", &map).finish()
+    }
+}
+
 impl<S> ToolBox<S> {
     pub fn new() -> Self {
         Self {
